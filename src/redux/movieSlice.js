@@ -1,36 +1,29 @@
 // src/slices/dataSlice.js
 
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice} from '@reduxjs/toolkit';
 
-// Define an async thunk for fetching data
-export const fetchData = createAsyncThunk('data/fetchData', async (url) => {
-  const response = await fetch(url);
-  const data = await response.json();
-  return data;
-});
+
 
 const dataSlice = createSlice({
   name: 'movieData',
   initialState: {
     movieData: [],
-    status: 'idle',
-    error: null,
+    status: 'idle', 
+    error: null, 
   },
-  reducers: {},
-  extraReducers: (builder) => {
-    builder
-      .addCase(fetchData.pending, (state) => {
-        state.status = 'loading';
-      })
-      .addCase(fetchData.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.movieData = action.payload;
-      })
-      .addCase(fetchData.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.error.message;
-      });
+  reducers: {
+    setMovieData: (state, action) => {
+      state.movieData = action.payload;
+      state.status = 'succeeded';
+    },
+    setMovieDataError: (state, action) => {
+      state.status = 'failed';
+      state.error = action.payload;
+    },
   },
+
 });
+
+export const { setMovieData, setMovieDataError } = dataSlice.actions;
 
 export default dataSlice.reducer;
