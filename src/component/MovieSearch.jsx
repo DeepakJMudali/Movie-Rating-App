@@ -8,51 +8,47 @@ import { setMovieData } from "../redux/movieSlice";
 const fetchMovieData = async (title) => {
   const searchUrl = `http://www.omdbapi.com/?apikey=5ee0e60e&t=${title}`;
   const response = await fetch(searchUrl);
-  const data = await response.json();
-  return data;
+  return response.json();
 };
 
 export default function MovieSearch() {
-  const [title, setTitle] = useState(""); // State to capture the movie title
+  const [title, setTitle] = useState("");
+  const [searchTitle, setSearchTitle] = useState(""); 
   const dispatch = useDispatch();
 
-  // Use React Query to fetch movie data when title is available
+
   const { data, status, error, isLoading } = useQuery({
-    queryKey: ["movie", title], // Define the query key in object form
-    queryFn: () => fetchMovieData(title), // Fetch movie data using the query function
-    enabled: !!title, // Only run the query if title is not empty
+    queryKey: ["movie", searchTitle],
+    queryFn: () => fetchMovieData(searchTitle), 
+    enabled: !!searchTitle, // Runs query only when searchTitle has a value
     onSuccess: (data) => {
       if (data.Response !== "False") {
-        // Dispatch the action to store movie data in Redux
-        dispatch(setMovieData(data));
+        dispatch(setMovieData(data)); 
       }
     },
     onError: (error) => {
-      // Handle query-level errors here
       console.error("Error fetching movie data:", error);
     },
   });
 
   return (
     <div>
-      {/* Search form */}
+
       <input
         type="text"
         placeholder="Search Movie Name here!"
-        id="title"
-        name="title"
         value={title}
-        onChange={(e) => setTitle(e.target.value)} // Update title as user types
+        onChange={(e) => setTitle(e.target.value)} 
       />
-
-      {/* Show spinner if query is loading */}
+ 
+      <button onClick={() => setSearchTitle(title)} disabled={!title || isLoading}>
+        Search
+      </button>
       {isLoading && <ClipLoader color="#3498db" loading={isLoading} size={50} />}
-
-      {/* Display Error */}
       {status === "error" && <p style={{ color: "red" }}>Error: {error.message}</p>}
 
-      {/* Display movie data if available */}
-      {status === "success" && data?.Response === "True" && (
+
+      {status === "success" && data?.Response !== "False" && (
         <>
           <h1>{data?.Title}</h1>
           <img src={data?.Poster} alt={data?.Title} />
@@ -63,7 +59,7 @@ export default function MovieSearch() {
         </>
       )}
 
-      {/* If movie not found */}
+
       {status === "success" && data?.Response === "False" && <h2>{data?.Error}</h2>}
     </div>
   );

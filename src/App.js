@@ -1,5 +1,6 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import './App.css';
 import MovieSearch from './component/MovieSearch';
 import MovieLists from './component/movieLists';
@@ -19,6 +20,7 @@ function App() {
           <MovieLists />
         </div>
       </Provider>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }
